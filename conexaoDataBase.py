@@ -8,14 +8,14 @@ load_dotenv()
 
 def conectar():
     # Estabelecendo conexão com o banco de dados; Pegando as variaveis de .env
-    conexao = psycopg2.connect(
+    o = psycopg2.connect(
         host = os.getenv("DB_HOST"),
         database = os.getenv("DB_NAME"),
         user = os.getenv("DB_USER"),
         password = os.getenv("DB_PASSWORD"), 
         port = os.getenv("DB_PORT")
     )
-    return conexao
+    return o
 
 
 def inserir_tarefa(conteudo_tarefa):
@@ -53,12 +53,43 @@ def buscar_tarefas():
 
     return resultado
 
+#Função que marcará como feita
+def marcar_como_concluida(id_tarefa):
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    cursor.execute(
+        "UPDATE tarefas SET esta_feita = True WHERE id = %s",
+        (id_tarefa,)
+    )
+
+# Função que vai apagar a tarefa
+def deletar_tarefa(id_tarefa):
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    cursor.execute(
+        "DELETE FROM tarefas WHERE id = %s",
+        (id_tarefa,)
+    )
+
+    conexao.commit()
+    cursor.close()
+    conexao.close()
+    
+
 
 if __name__ == "__main__":
     # Teste rápido: insere uma tarefa e depois lista todas
     inserir_tarefa("Testar conexao com o banco")
     tarefas = buscar_tarefas()
+    marcar_como_concluida(1)
 
     print("Tarefas no banco:")
     for tarefa in tarefas:
         print(tarefa)
+
+
+
+
+        
