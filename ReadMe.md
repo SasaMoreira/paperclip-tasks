@@ -97,7 +97,7 @@ paperclip-tasks/
 
 ![Gif do funcionamento geral do programa](imagens/Animação.gif)
 
-## 🧠 Aprendizados e desafios
+##  Aprendizados e desafios
 
 Durante o desenvolvimento, um dos principais desafios foi o uso da biblioteca psycopg2. Para mim foi difícil entender a lógica de como essa biblioteca pegava as listas de tuplas do database e como que eu ia conseguir manipular esses valores e buscar os dados que eu precisava. Mas essa foi também a parte que eu mais achei interessante, porque você meio que "entra" dentro desse processo de busca, e é como se você pudesse enxergar por trás da mágica dos dados, se torna algo compreensivel e não mais "obscuro".
 
@@ -105,7 +105,7 @@ Também foi um aprendizado importante implementar a prevenção contra **SQL Inj
 
 
 
-## 🔮 Próximos passos
+##  Próximos passos
 
 Algumas melhorias que pretendo implementar no futuro:
 
@@ -118,5 +118,7 @@ Algumas melhorias que pretendo implementar no futuro:
 ## 👩‍💻 Autor
 
 Desenvolvido por **Sara de Souza Moreira**
+
 GitHub: [github.com/SasaMoreira](https://github.com/SasaMoreira)
+
 LinkedIn: [linkedin.com/in/sarah-souza-435985244/](https://www.linkedin.com/in/sarah-souza-435985244/)
