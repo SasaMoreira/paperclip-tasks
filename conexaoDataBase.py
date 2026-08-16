@@ -8,19 +8,30 @@ load_dotenv()
 
 def conectar():
     # Estabelecendo conexão com o banco de dados; Pegando as variaveis de .env
-    o = psycopg2.connect(
-        host = os.getenv("DB_HOST"),
-        database = os.getenv("DB_NAME"),
-        user = os.getenv("DB_USER"),
-        password = os.getenv("DB_PASSWORD"), 
-        port = os.getenv("DB_PORT")
-    )
-    return o
+    try:
+        conexao = psycopg2.connect(
+            host = os.getenv("DB_HOST"),
+            database = os.getenv("DB_NAME"),
+            user = os.getenv("DB_USER"),
+            password = os.getenv("DB_PASSWORD"), 
+            port = os.getenv("DB_PORT")
+        )
+        return conexao
+    except psycopg2.OperationalError as erro:
+        print("Não foi possível conectar ao banco de dados.")
+        print(f"Detelhe do erro: {erro}")
+        return None
+
 
 
 def inserir_tarefa(conteudo_tarefa):
-    # Insere uma nova tarefa no banco de dados 
+    # Atribuindo a função conectar a variavel
     conexao = conectar()
+    # Testando se a conexão retornou nula e exibir mensagem de erro
+    if conexao == None:
+        print("Não foi possivel estabelecer a conexão ")
+        return
+    
     # Criando objeto que vai interagir com nosso banco
     interacao = conexao.cursor()
 
@@ -36,16 +47,20 @@ def inserir_tarefa(conteudo_tarefa):
     interacao.close()
     conexao.close()
 
-
+#Busca todas as tarefas cadastradas no banco de dados
 def buscar_tarefas():
-    #Busca todas as tarefas cadastradas no banco de dados
     conexao = conectar()
+
+    if conexao == None:
+        print("Algo deu errado na conexão.")
+        return
+    
     cursor = conexao.cursor()
 
     # Buscando os status da tarefa
     cursor.execute("SELECT id, conteudo_tarefa, esta_feita FROM tarefas ORDER BY id")
     
-    # Retornando os resultados da query em formato de duplas
+    # Retornando os resultados da query em formato de tuplas
     resultado = cursor.fetchall()
 
     cursor.close()
@@ -56,6 +71,11 @@ def buscar_tarefas():
 #Função que marcará como feita
 def marcar_como_concluida(id_tarefa):
     conexao = conectar()
+
+    if conexao == None:
+            print("Algo deu errado na conexão.")
+            return
+
     cursor = conexao.cursor()
 
     cursor.execute(
@@ -63,9 +83,23 @@ def marcar_como_concluida(id_tarefa):
         (id_tarefa,)
     )
 
+    #Verificando a quantidade de linhas que foram adicionadas ou removidas no banco
+    linhas_afetadas = cursor.rowcount
+    conexao.commit()
+    cursor.close()
+    conexao.close()
+
+    # As linhas afetadas devem ser maiores que 0 para que se entenda que houve uma modificação com um id existente
+    return linhas_afetadas > 0
+
 # Função que vai apagar a tarefa
 def deletar_tarefa(id_tarefa):
     conexao = conectar()
+
+    if conexao == None:
+            print("Algo deu errado na conexão.")
+            return
+    
     cursor = conexao.cursor()
 
     cursor.execute(
@@ -73,9 +107,12 @@ def deletar_tarefa(id_tarefa):
         (id_tarefa,)
     )
 
+    linhas_afetadas = cursor.rowcount
     conexao.commit()
     cursor.close()
     conexao.close()
+
+    return linhas_afetadas > 0
     
 
 
@@ -83,7 +120,6 @@ if __name__ == "__main__":
     # Teste rápido: insere uma tarefa e depois lista todas
     inserir_tarefa("Testar conexao com o banco")
     tarefas = buscar_tarefas()
-    marcar_como_concluida(1)
 
     print("Tarefas no banco:")
     for tarefa in tarefas:
